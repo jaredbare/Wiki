@@ -415,7 +415,7 @@ def createArticlePageView(request) :
             'all_users' : all_users,
             'title' : 'Create Article'
         }
-        return render(request, 'wikiWebsite/my_articles.html', context)
+        return render(request, 'wikiWebsite/create_article.html', context)
 
 # a view function that creates a new article using the form inputs of the create_article.html page and saves it to the database
 def updateArticleView(request) :
