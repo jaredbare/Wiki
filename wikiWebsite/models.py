@@ -39,7 +39,7 @@ class Person(models.Model) :
 class Article(models.Model) :
     header = models.CharField(max_length=200)
     subheader = models.CharField(max_length=300)
-    content = models.TextField()
+    content = HTMLField()
     date_created = models.DateTimeField(default=datetime.today())
     date_last_updated = models.DateTimeField(default=datetime.today())
     author = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, db_column='author_id')
