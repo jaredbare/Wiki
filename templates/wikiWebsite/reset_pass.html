@@ -19,12 +19,10 @@
     .bi-eye-slash-fill {
         display: none;
     }
-    
 </style>
 {% endblock additionalCSS %}
 
 {% block content %}
-
 <section id="contact" class="contact" style="margin-top: 100px;">
     <div class="container" data-aos="fade-up">
 
@@ -40,11 +38,9 @@
                         <label for="email">Enter your email</label>
                         <input type="text" class="form-control" name="email" id="email" placeholder="Email" required>
                     </div>
-                    {% comment %} {% if error %} {% endcomment %}
                     <div class="row">
                         <p class="error-msg" style="display: block">This email does not exist. Please try again. <u><a href="{% url 'signup' %}">Create account</a></u></p>
                     </div>
-                    {% comment %} {% endif %} {% endcomment %}
                     <div class="text-center mt-3"><button type="submit">Send Email</button></div>
                 </form>
             </div>  

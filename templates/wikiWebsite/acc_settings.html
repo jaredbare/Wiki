@@ -228,16 +228,19 @@
         let emailError = false;
         let usernameError = false;
 
+        // Allow popup to disappear
         setInterval(function() {
             $('.popup-confirmation').fadeOut('slow', function() {
                 $('.popup-confirmation').css('display', 'none');
             });
         }, 3000);
 
+        // X-out of popup
         $('.x').on('click', function() {
             $('.popup-confirmation').css('display', 'none');
         });
         
+        // Edit your personal information
         $('#edit').on('click', function() {
             $('.personal-info').css('display', 'none');
             $('.edit-personal-info').css('display', 'block');
@@ -245,6 +248,7 @@
             return false;
         });
 
+        // Edit your bio
         $('#edit2').on('click', function() {
             $('#about-form').show()
             $('#user-about').hide()
@@ -252,6 +256,7 @@
             return false;
         })
 
+        // Check if email is valid and not already taken
         $('#email').on('keyup', function() {
             emails.every(email => {
                 if (email === $('#email').val() && email !== user_email) {
@@ -270,6 +275,7 @@
             }
         });
 
+        // Check if username is valid and not already taken
         $('#username').on('keyup', function() {
             usernames.every(username => {
                 if (username === $('#username').val() && username !== user_username) {
@@ -289,6 +295,7 @@
                 
         });
 
+        // Add a bio
         $('#add-bio').on('click', function() {
             $(this).hide()
             $('#about-form').show()

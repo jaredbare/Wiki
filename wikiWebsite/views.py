@@ -8,7 +8,6 @@ import re
 
 
 salt = '2%5!#b2wr3SIs601c616f509c7b2374ffa12ef51d3d0bcfa511c2e7e8d4e4a5cbd678b7cf5e!#$12ef51d3d0bcfa511c$@1saTeRwq093&2jsfld'
-
 status = (
     ('S', 'Single'),
     ('R', 'In a relationship'),
@@ -48,15 +47,11 @@ def loginPageView(request) :
     error = False
     logged_in, user = loggedIn(request)
 
-    print('login view ' + request.method)
-
     if request.method == 'POST' :
         username = request.POST['username']
         password = request.POST['password']
         usernames = Person.objects.values_list('username')
 
-        for name in usernames :
-            print(name[0])
         if len(usernames) > 0 :
             for name in usernames :
                 if username == name[0] :
@@ -66,13 +61,12 @@ def loginPageView(request) :
                     if hash_password == user.password :
                         request.session['userid'] = user.id
                         return redirect(indexPageView)
-
                     else :
                         error = True
                 else :
                     error = True
-            else :
-                error = True
+        else :
+            error = True
 
     context = {
         'error': error,
@@ -95,6 +89,7 @@ def signUpPageView(request, subscriber_email=None) :
         email_list = []
         username_list = []
 
+        # Filling lists for validity checking
         emails = Person.objects.values('email')
         for email in emails :
             email_list.append(email['email'])
@@ -127,6 +122,8 @@ def createAccountView(request) :
         new_user.status = request.POST['status']
         new_user.about = request.POST.get('author-about')
         
+        # Check if person is already a subscriber and link their 
+        # subscriber email to their account
         if (request.POST['subscribe'] == 'y') :
             subscriber = Subscriber.objects.filter(email=request.POST['email'])
 
@@ -145,6 +142,8 @@ def createAccountView(request) :
 
     return redirect(indexPageView)
 
+# This doesn't work yet because hooking the website up to an SMTP server
+# is kind of a pain
 def resetPasswordView(request) :
     # if request.method == 'POST' :
 
@@ -159,7 +158,6 @@ def changePasswordPageView(request) :
         user.save()
 
         request.method = 'GET'
-
         return accountSettingsPageView(request, pass_changed=True)
     
     else :
@@ -175,6 +173,7 @@ def accountSettingsPageView(request, pass_changed=False) :
     email_list = []
     username_list = []
 
+    # Fill lists for validity checking
     emails = Person.objects.values('email')
     for email in emails :
         email_list.append(email['email'])
@@ -252,7 +251,7 @@ def articlePageView(request, id) : # add params
         'user' : user,
         'title': article.header,
         'article' : article,
-        'comments' : comments, 
+        'comments' : comments,
         'content_no_break' : article.content.replace('<br>', '')
     }
     return render(request, 'wikiWebsite/article.html', context)
@@ -294,7 +293,6 @@ def highlight(str, search, start) :
         content += str[end:returnSpace(str, (end+100), True)] + ' ...'
     else :
         content += str[end:]
-        
     
     return content
 

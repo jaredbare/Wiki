@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
 <!-- displays all the articles -->
-
 <section class="inner-page">
     <div class="container">  
         <div class="row regular-article-view">
@@ -51,6 +49,8 @@
                     </div>
                 </section>
             </div>
+
+            <!-- Comment Section -->
             <div class="row" id="comment">
                 <section id="contact" class="contact" >
                     <div class="col-md-7" style="margin-left: 100px">
@@ -100,6 +100,7 @@
             </div>
         </div>
 
+        <!-- Edit Article View -->
         <div class="row edit-article-view" style="display: none;">
             <div class="col-md-1"></div>
             <div class="col-md-7">
@@ -123,7 +124,6 @@
                         <div class="mx-auto" data-aos="fade-up">
                             <label for="content">Content</label>
                             <textarea name="content" id="" cols="30" rows="20"name="content" class="form-control" rows="10">{{ content_no_break }}</textarea>
-                            {% comment %} <div class="article-content-words"></div> {% endcomment %}
                         </div>
                     </div>
                     <div class="mt-4 text-center"><button id="submit" type="submit"
@@ -152,26 +152,20 @@
                         <ul>
                             <li>Please <a href="{% url 'login' %}">log in</a> to contribute</li>
                         </ul>
-                       
                         {% endif %}
-                        
                     </div>
                 </section>
             </div>
             </div>
         </div>
-        
-        
     </div>
 </section>
-
-
 {% endblock content %}
-
 
 {% block additionalJS %}
 <script>
     $(function() {
+        // Toggle to edit view
         $('#edit-article').on('click', function() {
             $('.regular-article-view').hide();
             $('.edit-article-view').show();

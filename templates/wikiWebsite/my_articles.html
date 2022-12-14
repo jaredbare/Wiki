@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
 
+{% block content %}
 <!-- displays all the articles -->
 <section id="services" class="services">
     <div class="container" data-aos="fade-up">
@@ -10,6 +10,7 @@
             <h2>Articles</h2>
             <p>My Articles</p>
         </div>
+
         {% if articles %}
         <div class="article-container">
         {% for article in articles %}
@@ -30,9 +31,6 @@
             </div>
         </div>
         {% endif %}
-
     </div>
 </section>
-
-
 {% endblock content %}
