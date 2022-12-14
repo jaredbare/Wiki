@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from tinymce.models import HTMLField
 
 
 class Subscriber(models.Model) :
