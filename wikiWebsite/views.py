@@ -128,10 +128,10 @@ def createAccountView(request) :
         new_user.about = request.POST.get('author-about')
         
         if (request.POST['subscribe'] == 'y') :
-            subscriber = Subscriber.objects.get(email=request.POST['email'])
+            subscriber = Subscriber.objects.filter(email=request.POST['email'])
 
-            if (subscriber) :
-                new_user.subscriber = subscriber
+            if len(subscriber) > 0 :
+                new_user.subscriber = subscriber[0]
             else :
                 new_subscriber = Subscriber()
                 new_subscriber.dateSubscribed = date.today()
