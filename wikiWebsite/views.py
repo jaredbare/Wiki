@@ -88,27 +88,30 @@ def logoutView(request) :
     return redirect(indexPageView)
 
 def signUpPageView(request, subscriber_email=None) :
-    logged_in, user = loggedIn(request) 
-    email_list = []
-    username_list = []
+    logged_in, user = loggedIn(request)
+    if logged_in :
+        return indexPageView(request)
+    else :
+        email_list = []
+        username_list = []
 
-    emails = Person.objects.values('email')
-    for email in emails :
-        email_list.append(email['email'])
-    usernames = Person.objects.values('username')
-    for username in usernames :
-        username_list.append(username['username'])
-        
-    context = {
-        'usernames' : username_list,
-        'emails' : email_list,
-        'options' : status,
-        'logged_in' : logged_in,
-        'user' : user,
-        'title' : 'Sign up',
-        'subscriber_email' : subscriber_email
-    }
-    return render(request, 'wikiWebsite/signup.html', context)
+        emails = Person.objects.values('email')
+        for email in emails :
+            email_list.append(email['email'])
+        usernames = Person.objects.values('username')
+        for username in usernames :
+            username_list.append(username['username'])
+            
+        context = {
+            'usernames' : username_list,
+            'emails' : email_list,
+            'options' : status,
+            'logged_in' : logged_in,
+            'user' : user,
+            'title' : 'Sign up',
+            'subscriber_email' : subscriber_email
+        }
+        return render(request, 'wikiWebsite/signup.html', context)
 
 def createAccountView(request) :
 
@@ -122,21 +125,19 @@ def createAccountView(request) :
         password = request.POST['password']
         new_user.password = sha256((password + salt[0:(len(password) + len(username))]).encode('utf-8')).hexdigest()
         new_user.status = request.POST['status']
+        new_user.about = request.POST.get('author-about')
         
-        if (request.POST['subscribe']) :
-            new_subscriber = Subscriber()
-            new_subscriber.dateSubscribed = date.today()
-            new_subscriber.save()
+        if (request.POST['subscribe'] == 'y') :
+            subscriber = Subscriber.objects.get(email=request.POST['email'])
 
-            new_user.subscriber = new_subscriber
-        
-        if (request.POST.get('author')) :
-            new_author = Author()
-            new_author.dateBecameAuthor = date.today()
-            new_author.about = request.POST.get('author-about')
-            new_author.save()
-
-            new_user.author = new_author
+            if (subscriber) :
+                new_user.subscriber = subscriber
+            else :
+                new_subscriber = Subscriber()
+                new_subscriber.dateSubscribed = date.today()
+                new_subscriber.email = request.POST['email']
+                new_subscriber.save()
+                new_user.subscriber = new_subscriber
 
         new_user.save()
 
@@ -204,6 +205,15 @@ def accountSettingsPageView(request, pass_changed=False) :
     }
     return render(request, 'wikiWebsite/acc_settings.html', context)
 
+def addBio(request) :
+    logged_in, user = loggedIn(request)
+    if request.method == 'POST' :
+        user.about = request.POST['about']
+        print(request.POST['about'])
+        user.save()
+    
+    return redirect(accountSettingsPageView)
+
 # ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # vvv    VIEWS RELATED TO ARTICLES    vvv
 # ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -229,7 +239,8 @@ def articlePageView(request, id) : # add params
         'user' : user,
         'title': article.header,
         'article' : article,
-        'comments' : comments
+        'comments' : comments, 
+        'content_no_break' : article.content.replace('<br>', '')
     }
     return render(request, 'wikiWebsite/article.html', context)
 
@@ -309,9 +320,36 @@ def searchArticle(request) :
         }
         return render(request, 'wikiWebsite/search.html', context)
 
-def subscribeView(request) :
+def subscribePageView(request) :
+    logged_in, user = loggedIn(request)
+    subscribed = False
+
+    if request.method == 'GET' :
+        new_subscriber = Subscriber()
+        new_subscriber.email = user.email
+        new_subscriber.dateSubscribed = datetime.today()
+        new_subscriber.save()
+
+        user.subscriber = new_subscriber
+        user.save()
+    
+        return redirect(accountSettingsPageView)
+
+
     if request.method == 'POST' :
-        return signUpPageView(request, subscriber_email=request.POST['email'])
+        subscribed = True
+        new_subscriber = Subscriber()
+        new_subscriber.email = request.POST['email']
+        new_subscriber.dateSubscribed = datetime.today()
+        new_subscriber.save()
+
+    context = {
+        'subscribed' : subscribed,
+        'logged_in' : logged_in,
+        'user' : user
+    }
+
+    return render(request, 'wikiWebsite/subscribe.html', context)
 
 def myArticlesPageView(request) :
     logged_in, user = loggedIn(request)
@@ -364,52 +402,17 @@ def createArticlePageView(request) :
         return render(request, 'wikiWebsite/create_article.html', context)
 
 # a view function that creates a new article using the form inputs of the create_article.html page and saves it to the database
-def updateArticleView(request, page) :
-    logged_in, user = loggedIn(request)
-
+def updateArticleView(request) :
+    
     if request.method == 'POST' :
-        # if the page we're coming from is 'create' :
-        if page == 'create' :
-            new_article = Article()
-            new_article.header = request.POST['heading']
-            new_article.subheader = request.POST['subheading']
-            new_article.content = request.POST['content']
-            new_article.date_created = datetime.today()
-            new_article.date_last_updated = datetime.today()
-            new_article.save()
+        article_id = request.POST['article_id']
+        article = Article.objects.get(id=article_id)
+        article.header = request.POST['header']
+        article.subheader = request.POST['subheader']
+        article.content = parseNewLine(request.POST['content'])
+        article.save()
 
-            article = Article.objects.get(id=new_article.id)
-
-            article.authors.add(request.session['co-author'])
-
-
-            # add an author to the article using the user that is logged in and add that to the database
-            new_article.author.set(Person.objects.get(id=request.session['userid']))
-
-            # new_article_author =
-            # = Person.objects.get(id=request.session['userid'])
-
-           
-
-            # add author to article
-            # new_article.author = request.session['userid']
-
-            
-            
-            # author.author.article_set.add(new_article)
-
-        # if the page we're coming from is 'edit' :
-        # else :
-        #     article = Article.objects.get(id=page)
-        #     article.header = request.POST['heading']
-        #     article.subheader = request.POST['subheading']
-        #     article.content = request.POST['content']
-        #     article.dateLastUpdated = datetime.now()
-        #     article.save()
-
-
-
-    return redirect(myArticlesPageView)
+        return redirect('/article/' + str(article_id))
 
 def deleteArticle(request, id) :
     article = Article.objects.get(id=id)
