@@ -27,7 +27,7 @@
               </div>
               <div class="form-group mt-3">
                 <label for="name">Article Content</label>
-                <textarea class="form-control" name="content" rows="10" placeholder="Write your relationship thoughts here..." required>{{ form.as_p }}</textarea>
+                <textarea class="form-control" name="content" rows="10" placeholder="Write your relationship thoughts here..." required> {% comment %} {{ form.as_p }} {% endcomment %} </textarea>
               </div>
               <div class="text-center"><button type="submit">Create</button></div>
             </form>
