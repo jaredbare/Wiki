@@ -30,6 +30,11 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   {% block additionalCSS %}{% endblock additionalCSS %}
 
+  <!--Tinymce Text-Editor (Must be in Head Tag) -->
+  <script src="https://cdn.tiny.cloud/1/g77y3cq69sde8om1y2zez6anzxknnf298x7w2zqmb2t8mail/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="{% static 'myapp/js/tinymce/tinymce.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'myapp/js/tinymce/custom.js' %}" ></script>
+
   <!-- =======================================================
   * Template Name: Ninestars - v4.9.1
   * Template URL: https://bootstrapmade.com/ninestars-free-bootstrap-3-theme-for-creative/
@@ -58,9 +63,9 @@
           <li class="search-icon"><a href="">
             <i class="bi bi-search" style="font-size: 16px;"></i>
           </a></li>
-          <li><a class="nav-link scrollto" href="{% url 'about' %}">About Us</a></li>
+          <li><a class="getstarted scrollto" href="{% url 'create' %}">Create</a></li>
           <li><a class="nav-link scrollto" href="{% url 'all_articles' %}">Articles</a></li>
-          <li><a class="nav-link scrollto" href="{% url 'create' %}">Create</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'about' %}">About Us</a></li>
           <li class="dropdown"><a href="#"><span>My Account</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
                 <li><a href="{% url 'my_articles' %}">My Articles</a></li>
@@ -217,6 +222,19 @@
   <script src="{% static 'js/myjquery.js' %}"></script>
   <script src="{% static 'js/validate.js' %}"></script>
   {% block additionalJS %}{% endblock additionalJS %}
+  <script>
+    tinymce.init({
+      selector: 'textarea',
+      plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss',
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+      tinycomments_mode: 'embedded',
+      tinycomments_author: 'Author name',
+      mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+      ]
+    });
+  </script>
 </body>
 
 </html>
