@@ -8,6 +8,13 @@ $(function() {
       return false;
     });
 
+    $('.search-bar').focusout(function() {
+        $('.search-bar-list-item').fadeOut(100);
+        setTimeout(function() {
+            $('.search-icon').fadeIn(100);
+        }, 100);
+    });
+
     // Hide and show password text
     $('.bi-eye-fill').on('click', function() {
         $(this).hide();
